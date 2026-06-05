@@ -87,3 +87,41 @@ Diagramas en `docs/architecture/diagrams/`.
 
 - `/terminos-de-uso`
 - `/politica-de-privacidad`
+
+## TODO
+
+Cosas pendientes, en el orden que tiene sentido irlas atacando:
+
+### Infra como código (IaC)
+
+Convertir la infra en IaC para que sea portable y replicable. Vamos por pedazos:
+
+- [ ] `generateOtp`
+- [ ] `validateOtp`
+- [ ] Generación del digest + envío del digest (`sendDigestMail`)
+
+### Seguridad
+
+Revisar la app de punta a punta:
+
+- [ ] Rate limits (OTP, endpoints públicos)
+- [ ] Inyecciones y validación de inputs (aunque no haya SQL, revisar DynamoDB, API Gateway, etc.)
+- [ ] Otras vulnerabilidades comunes (CORS mal configurado, headers, exposición de datos, abuso del flujo de suscripción)
+
+### Front y deploy
+
+- [ ] Afinar el frontend (UX, edge cases, responsive)
+- [ ] Desplegar front y backend
+- [ ] CORS bien configurado entre front y API
+- [ ] Enlace de unsubscribe en el correo del digest
+- [ ] Enlaces a términos y política de privacidad en el correo
+
+### Documentación
+
+- [ ] Completar docs de arquitectura (diagramas, ADRs faltantes, runbooks)
+- [ ] README del backend / IaC cuando exista
+- [ ] Guía de deploy
+
+### Publicación
+
+- [ ] Publicar el proyecto en LinkedIn
