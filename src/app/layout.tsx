@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Cloud Tech News — Sign In",
-  description: "Stay up to date with the latest cloud technology news. Sign in to your account.",
+  title: "Daily Tech News — Iniciar sesión",
+  description: "Mantente al día con las últimas noticias de tecnología. Inicia sesión en tu cuenta.",
 };
 
 export default function RootLayout({
@@ -24,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="es"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>

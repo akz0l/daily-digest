@@ -1,32 +1,56 @@
 "use client";
 
 import { useState, FormEvent } from "react";
+import { TOPICS, type Topic } from "@/lib/topics";
 
 interface EmailStepProps {
-  onSubmit: (email: string) => void;
+  onSubmit: (email: string, topics: Topic[]) => void;
   isLoading?: boolean;
   apiError?: string;
+  initialEmail?: string;
+  initialTopics?: Topic[];
 }
 
-export function EmailStep({ onSubmit, isLoading = false, apiError }: EmailStepProps) {
-  const [email, setEmail] = useState("");
+export function EmailStep({
+  onSubmit,
+  isLoading = false,
+  apiError,
+  initialEmail = "",
+  initialTopics = [],
+}: EmailStepProps) {
+  const [email, setEmail] = useState(initialEmail);
+  const [selectedTopics, setSelectedTopics] = useState<Topic[]>(initialTopics);
   const [error, setError] = useState("");
+  const [topicsError, setTopicsError] = useState("");
+
+  const toggleTopic = (topic: Topic) => {
+    setTopicsError("");
+    setSelectedTopics((prev) =>
+      prev.includes(topic) ? prev.filter((t) => t !== topic) : [...prev, topic]
+    );
+  };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     setError("");
+    setTopicsError("");
 
     if (!email.trim()) {
-      setError("Email address is required.");
+      setError("El correo electrónico es obligatorio.");
       return;
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      setError("Enter a valid email address (e.g. you@example.com).");
+      setError("Introduce un correo válido (p. ej. tu@ejemplo.com).");
       return;
     }
 
-    onSubmit(email.trim().toLowerCase());
+    if (selectedTopics.length === 0) {
+      setTopicsError("Selecciona al menos un tema.");
+      return;
+    }
+
+    onSubmit(email.trim().toLowerCase(), selectedTopics);
   };
 
   return (
@@ -37,10 +61,10 @@ export function EmailStep({ onSubmit, isLoading = false, apiError }: EmailStepPr
       </div>
 
       <h1 className="text-[22px] font-semibold text-[#111827] leading-tight mb-2">
-        Sign in to Cloud Tech News
+        Inicia sesión en Digest Tech News
       </h1>
       <p className="text-sm text-[#6b7280] leading-relaxed mb-6">
-        Enter your email and we&apos;ll send you a verification code
+        Elige los temas que te interesan e introduce tu correo para recibir un código de verificación
       </p>
 
       <form onSubmit={handleSubmit} noValidate>
@@ -49,7 +73,7 @@ export function EmailStep({ onSubmit, isLoading = false, apiError }: EmailStepPr
             htmlFor="email"
             className="block text-sm font-medium text-[#374151] mb-1.5"
           >
-            Email address
+            Correo electrónico
           </label>
           <input
             id="email"
@@ -79,6 +103,40 @@ export function EmailStep({ onSubmit, isLoading = false, apiError }: EmailStepPr
           )}
         </div>
 
+        <div className="mb-5">
+          <p className="block text-sm font-medium text-[#374151] mb-2">
+            Temas de interés
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {TOPICS.map((topic) => {
+              const isSelected = selectedTopics.includes(topic);
+              return (
+                <button
+                  key={topic}
+                  type="button"
+                  onClick={() => toggleTopic(topic)}
+                  className={[
+                    "text-xs font-semibold px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer",
+                    isSelected
+                      ? "bg-[#FF9900] text-white"
+                      : "bg-[#f3f4f6] text-[#6b7280] hover:bg-[#e5e7eb] hover:text-[#374151]",
+                    topicsError && !isSelected ? "ring-1 ring-red-300" : "",
+                  ].join(" ")}
+                >
+                  {isSelected && <span className="mr-1">✓</span>}
+                  {topic}
+                </button>
+              );
+            })}
+          </div>
+          {topicsError && (
+            <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+              <ErrorDotIcon />
+              {topicsError}
+            </p>
+          )}
+        </div>
+
         <button
           type="submit"
           disabled={isLoading}
@@ -93,10 +151,10 @@ export function EmailStep({ onSubmit, isLoading = false, apiError }: EmailStepPr
           {isLoading ? (
             <>
               <SpinnerIcon />
-              Sending code…
+              Enviando código…
             </>
           ) : (
-            "Continue →"
+            "Continuar →"
           )}
         </button>
 

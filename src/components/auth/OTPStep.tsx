@@ -14,10 +14,12 @@ const RESEND_SECONDS = 30;
 
 interface OTPStepProps {
   email: string;
-  onVerify: (otp: string) => void;
+  onVerify: (otp: string) => Promise<void>;
   onBack: () => void;
   onResend: () => Promise<void>;
   isLoading?: boolean;
+  apiError?: string;
+  onClearError?: () => void;
 }
 
 export function OTPStep({
@@ -26,6 +28,8 @@ export function OTPStep({
   onBack,
   onResend,
   isLoading = false,
+  apiError,
+  onClearError,
 }: OTPStepProps) {
   const [digits, setDigits] = useState<string[]>(Array(LEN).fill(""));
   const [error, setError] = useState("");
@@ -65,7 +69,16 @@ export function OTPStep({
 
   const clearError = () => {
     if (error) setError("");
+    onClearError?.();
   };
+
+  useEffect(() => {
+    if (!apiError) return;
+    setError(apiError);
+    triggerShake();
+    setDigits(Array(LEN).fill(""));
+    setTimeout(() => inputRefs.current[0]?.focus(), 20);
+  }, [apiError]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleChange = (index: number, value: string) => {
     clearError();
@@ -117,17 +130,8 @@ export function OTPStep({
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!isFilled || isLoading) return;
-
-    // Demo: entering "000000" simulates a wrong-code error
-    if (otp === "000000") {
-      setError("Incorrect code. Please try again.");
-      triggerShake();
-      setDigits(Array(LEN).fill(""));
-      setTimeout(() => inputRefs.current[0]?.focus(), 20);
-      return;
-    }
-
-    onVerify(otp);
+    setError("");
+    await onVerify(otp);
   };
 
   const handleResend = async () => {
@@ -150,16 +154,16 @@ export function OTPStep({
         className="flex items-center gap-1 text-sm text-[#9ca3af] hover:text-[#374151] mb-6 cursor-pointer transition-colors -ml-0.5"
       >
         <span className="text-base leading-none">←</span>
-        <span>Back</span>
+        <span>Volver</span>
       </button>
 
       <h1 className="text-[22px] font-semibold text-[#111827] leading-tight mb-2">
-        Check your inbox
+        Revisa tu bandeja de entrada
       </h1>
       <p className="text-sm text-[#6b7280] leading-relaxed mb-7">
-        We sent a 6-digit code to{" "}
+        Enviamos un código de 6 dígitos a{" "}
         <span className="font-medium text-[#374151]">{email}</span>
-        . It expires in 10&nbsp;minutes.
+        . Expira en 10&nbsp;minutos.
       </p>
 
       <form onSubmit={handleSubmit} noValidate>
@@ -200,9 +204,12 @@ export function OTPStep({
 
         {/* Error message */}
         {error && (
-          <p className="mt-2.5 text-xs text-red-500 text-center">
-            {error}
-          </p>
+          <div className="mt-3 flex items-start gap-2 p-3 rounded-lg bg-red-50 border border-red-200">
+            <svg className="w-4 h-4 text-red-500 shrink-0 mt-0.5" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm-.75 4a.75.75 0 011.5 0v3.5a.75.75 0 01-1.5 0V5zm.75 7a.875.875 0 110-1.75.875.875 0 010 1.75z" />
+            </svg>
+            <p className="text-xs text-red-600 leading-relaxed">{error}</p>
+          </div>
         )}
 
         {/* Resend */}
@@ -214,11 +221,11 @@ export function OTPStep({
               disabled={isResending}
               className="text-[13px] text-[#FF9900] hover:text-[#EC7211] font-medium cursor-pointer transition-colors disabled:opacity-60"
             >
-              {isResending ? "Sending…" : "Resend code"}
+              {isResending ? "Enviando…" : "Reenviar código"}
             </button>
           ) : (
             <span className="text-[13px] text-[#9ca3af] tabular-nums">
-              Resend in {countdown}s
+              Reenviar en {countdown}s
             </span>
           )}
         </div>
@@ -238,10 +245,10 @@ export function OTPStep({
           {isLoading ? (
             <>
               <SpinnerIcon />
-              Verifying…
+              Verificando…
             </>
           ) : (
-            "Verify →"
+            "Verificar →"
           )}
         </button>
       </form>
