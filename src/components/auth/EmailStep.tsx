@@ -151,7 +151,7 @@ export function EmailStep({
           {isLoading ? (
             <>
               <SpinnerIcon />
-              Enviando código…
+              Procesando…
             </>
           ) : (
             "Continuar →"

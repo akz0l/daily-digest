@@ -7,58 +7,12 @@ import { AuthCard } from "@/components/auth/AuthCard";
 import { EmailStep } from "@/components/auth/EmailStep";
 import { OTPStep } from "@/components/auth/OTPStep";
 import { SuccessStep } from "@/components/auth/SuccessStep";
+import {
+  checkActiveSubscriber,
+  generateOtp,
+  validateOtp,
+} from "@/lib/api";
 import type { Topic } from "@/lib/topics";
-
-const OTP_ENDPOINT = process.env.NEXT_PUBLIC_OTP_ENDPOINT ?? "";
-
-interface OTPApiBody {
-  id: string;
-  message: string;
-}
-
-async function requestOTP(email: string, topics: Topic[]): Promise<OTPApiBody> {
-  const res = await fetch(OTP_ENDPOINT + "/generate", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, topics }),
-  });
-
-  // API Gateway wraps the Lambda response: { statusCode, headers, body (JSON string) }
-  const outer = await res.json();
-  const body: OTPApiBody =
-    typeof outer.body === "string" ? JSON.parse(outer.body) : outer.body;
-
-  if (outer.statusCode !== 200) {
-    throw new Error(
-      (body as { message?: string }).message ??
-      "No se pudo enviar el código. Intenta de nuevo."
-    );
-  }
-
-  return body;
-}
-
-async function verifyOTP(uuid: string, otp: string, email: string): Promise<OTPApiBody> {
-  const res = await fetch(OTP_ENDPOINT + "/validate", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id: uuid, otp, email }),
-  });
-  // API Gateway wraps the Lambda response: { statusCode, headers, body (JSON string) }
-  const outer = await res.json();
-  const body: OTPApiBody =
-    typeof outer.body === "string" ? JSON.parse(outer.body) : outer.body;
-
-  if (outer.statusCode !== 200) {
-    throw new Error(
-      (body as { message?: string }).message ??
-      "No se pudo verificar el código. Intenta de nuevo."
-    );
-  }
-
-  return body;
-}
-
 
 type Step = "email" | "otp" | "success";
 
@@ -74,7 +28,15 @@ export default function Home() {
     setIsLoading(true);
     setApiError("");
     try {
-      const response = await requestOTP(submittedEmail, selectedTopics);
+      const isActive = await checkActiveSubscriber(submittedEmail);
+      if (isActive) {
+        setApiError(
+          "Este correo ya tiene una suscripción activa. Debes darte de baja antes de volver a suscribirte."
+        );
+        return;
+      }
+
+      const response = await generateOtp(submittedEmail, selectedTopics);
       setUuid(response.id);
       setEmail(submittedEmail);
       setTopics(selectedTopics);
@@ -94,7 +56,7 @@ export default function Home() {
     setIsLoading(true);
     setApiError("");
     try {
-      await verifyOTP(uuid, otp, email);
+      await validateOtp(uuid, otp, email);
       setStep("success");
     } catch (err) {
       setApiError(
@@ -117,11 +79,13 @@ export default function Home() {
     setIsLoading(true);
     setApiError("");
     try {
-      const response = await requestOTP(email, topics);
+      const response = await generateOtp(email, topics);
       setUuid(response.id);
       setStep("otp");
     } catch (err) {
-      setApiError(err instanceof Error ? err.message : "No se pudo enviar el código. Intenta de nuevo.");
+      setApiError(
+        err instanceof Error ? err.message : "No se pudo enviar el código. Intenta de nuevo."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -132,7 +96,6 @@ export default function Home() {
       <AwsHeader />
 
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-14">
-        {/* Pill-style step indicator */}
         <div className="flex items-center gap-2 mb-8">
           <span
             className={[
@@ -172,7 +135,6 @@ export default function Home() {
           </span>
         </div>
 
-        {/* Card */}
         <AuthCard>
           {step === "email" && (
             <EmailStep
@@ -197,7 +159,6 @@ export default function Home() {
           {step === "success" && <SuccessStep email={email} topics={topics} />}
         </AuthCard>
 
-        {/* Footer */}
         <p className="mt-6 text-xs text-[#9ca3af] text-center max-w-[380px] leading-relaxed">
           Al continuar, aceptas nuestros{" "}
           <Link href="/terminos-de-uso" className="underline underline-offset-2 hover:text-[#6b7280] transition-colors">
@@ -213,4 +174,3 @@ export default function Home() {
     </div>
   );
 }
-
