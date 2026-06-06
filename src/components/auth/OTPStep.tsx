@@ -151,18 +151,18 @@ export function OTPStep({
       <button
         type="button"
         onClick={onBack}
-        className="flex items-center gap-1 text-sm text-[#9ca3af] hover:text-[#374151] mb-6 cursor-pointer transition-colors -ml-0.5"
+        className="flex items-center gap-1 text-sm text-[#9ca3af] hover:text-[#374151] dark:hover:text-[#f9fafb] mb-6 cursor-pointer transition-colors -ml-0.5"
       >
         <span className="text-base leading-none">←</span>
         <span>Volver</span>
       </button>
 
-      <h1 className="text-[22px] font-semibold text-[#111827] leading-tight mb-2">
+      <h1 className="text-[22px] font-semibold text-[#111827] dark:text-[#f9fafb] leading-tight mb-2">
         Revisa tu bandeja de entrada
       </h1>
       <p className="text-sm text-[#6b7280] leading-relaxed mb-7">
         Enviamos un código de 6 dígitos a{" "}
-        <span className="font-medium text-[#374151]">{email}</span>
+        <span className="font-medium text-[#374151] dark:text-[#d1d5db]">{email}</span>
         . Expira en 10&nbsp;minutos.
       </p>
 
@@ -190,13 +190,13 @@ export function OTPStep({
               onFocus={(e) => e.target.select()}
               className={[
                 "w-12 h-14 text-center text-[22px] font-semibold rounded-lg outline-none",
-                "border-[1.5px] bg-white text-[#111827] transition-colors",
+                "border-[1.5px] bg-white dark:bg-[#0f1923] text-[#111827] dark:text-[#f9fafb] transition-colors",
                 "focus:border-[#FF9900] focus:ring-2 focus:ring-[#FF9900]/20",
                 error
-                  ? "border-red-400 bg-red-50/50"
+                  ? "border-red-400 bg-red-50/50 dark:bg-red-950/30"
                   : digit
-                  ? "border-[#FF9900]/50 bg-[#FFFCF5]"
-                  : "border-[#e5e7eb] hover:border-[#d1d5db]",
+                  ? "border-[#FF9900]/50 bg-[#FFFCF5] dark:bg-[#2a1f0a]"
+                  : "border-[#e5e7eb] dark:border-[#374151] hover:border-[#d1d5db] dark:hover:border-[#4b5563]",
               ].join(" ")}
             />
           ))}
@@ -238,7 +238,7 @@ export function OTPStep({
             "w-full h-11 rounded-lg text-sm font-semibold",
             "flex items-center justify-center gap-2 transition-colors",
             !isFilled || isLoading
-              ? "bg-[#f3f4f6] text-[#9ca3af] cursor-not-allowed"
+              ? "bg-[#f3f4f6] dark:bg-[#374151] text-[#9ca3af] cursor-not-allowed"
               : "bg-[#FF9900] hover:bg-[#EC7211] active:bg-[#D08B00] text-white cursor-pointer",
           ].join(" ")}
         >

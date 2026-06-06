@@ -43,6 +43,7 @@ La app llama a dos rutas de ese endpoint:
 |------|--------|------|
 | `/generate` | POST | `{ "email": "...", "topics": ["Cloud", "IA"] }` |
 | `/validate` | POST | `{ "id": "...", "otp": "...", "email": "..." }` |
+| `/unsubscribe` | POST | `{ "id": "...", "email": "..." }` |
 
 ## Estructura del proyecto
 
@@ -50,6 +51,7 @@ La app llama a dos rutas de ese endpoint:
 src/
 ├── app/
 │   ├── page.tsx                    # Flujo principal (correo → OTP → éxito)
+│   ├── unsubscribe/              # Baja de suscripción (?id=...&email=...)
 │   ├── terminos-de-uso/
 │   └── politica-de-privacidad/
 ├── components/
@@ -83,8 +85,9 @@ Decisiones de diseño documentadas en `docs/architecture/decisions/`:
 
 Diagramas en `docs/architecture/diagrams/`.
 
-## Páginas legales
+## Páginas
 
+- `/unsubscribe?id={id}&email={email}` — cancelación de suscripción (enlace del correo)
 - `/terminos-de-uso`
 - `/politica-de-privacidad`
 

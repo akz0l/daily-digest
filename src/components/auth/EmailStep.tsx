@@ -60,7 +60,7 @@ export function EmailStep({
         <CloudOutlineIcon />
       </div>
 
-      <h1 className="text-[22px] font-semibold text-[#111827] leading-tight mb-2">
+      <h1 className="text-[22px] font-semibold text-[#111827] dark:text-[#f9fafb] leading-tight mb-2">
         Inicia sesión en Digest Tech News
       </h1>
       <p className="text-sm text-[#6b7280] leading-relaxed mb-6">
@@ -71,7 +71,7 @@ export function EmailStep({
         <div className="mb-4">
           <label
             htmlFor="email"
-            className="block text-sm font-medium text-[#374151] mb-1.5"
+            className="block text-sm font-medium text-[#374151] dark:text-[#d1d5db] mb-1.5"
           >
             Correo electrónico
           </label>
@@ -87,12 +87,12 @@ export function EmailStep({
             }}
             placeholder="you@example.com"
             className={[
-              "w-full h-11 px-3.5 text-sm text-[#111827] placeholder-[#9ca3af]",
-              "bg-white rounded-lg border outline-none transition-colors",
+              "w-full h-11 px-3.5 text-sm text-[#111827] dark:text-[#f9fafb] placeholder-[#9ca3af]",
+              "bg-white dark:bg-[#0f1923] rounded-lg border outline-none transition-colors",
               "focus:ring-2 focus:ring-[#FF9900]/25 focus:border-[#FF9900]",
               error
-                ? "border-red-400 bg-red-50/40"
-                : "border-[#e5e7eb] hover:border-[#d1d5db]",
+                ? "border-red-400 bg-red-50/40 dark:bg-red-950/30"
+                : "border-[#e5e7eb] dark:border-[#374151] hover:border-[#d1d5db] dark:hover:border-[#4b5563]",
             ].join(" ")}
           />
           {error && (
@@ -104,7 +104,7 @@ export function EmailStep({
         </div>
 
         <div className="mb-5">
-          <p className="block text-sm font-medium text-[#374151] mb-2">
+          <p className="block text-sm font-medium text-[#374151] dark:text-[#d1d5db] mb-2">
             Temas de interés
           </p>
           <div className="flex flex-wrap gap-2">
@@ -119,7 +119,7 @@ export function EmailStep({
                     "text-xs font-semibold px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer",
                     isSelected
                       ? "bg-[#FF9900] text-white"
-                      : "bg-[#f3f4f6] text-[#6b7280] hover:bg-[#e5e7eb] hover:text-[#374151]",
+                      : "bg-[#f3f4f6] dark:bg-[#374151] text-[#6b7280] dark:text-[#9ca3af] hover:bg-[#e5e7eb] dark:hover:bg-[#4b5563] hover:text-[#374151] dark:hover:text-[#f9fafb]",
                     topicsError && !isSelected ? "ring-1 ring-red-300" : "",
                   ].join(" ")}
                 >

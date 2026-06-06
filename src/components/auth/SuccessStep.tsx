@@ -25,7 +25,7 @@ export function SuccessStep({ email, topics }: SuccessStepProps) {
         </svg>
       </div>
 
-      <h1 className="text-[22px] font-semibold text-[#111827] leading-tight mb-2">
+      <h1 className="text-[22px] font-semibold text-[#111827] dark:text-[#f9fafb] leading-tight mb-2">
         ¡Todo listo!
       </h1>
       <p className="text-sm text-[#6b7280] leading-relaxed mb-1">
@@ -33,7 +33,7 @@ export function SuccessStep({ email, topics }: SuccessStepProps) {
       </p>
       <p className="text-sm text-[#6b7280] leading-relaxed mb-3">
         Recibirás tu resumen diario en{" "}
-        <span className="font-medium text-[#374151]">{email}</span>.
+        <span className="font-medium text-[#374151] dark:text-[#d1d5db]">{email}</span>.
       </p>
       <div className="flex flex-wrap justify-center gap-2 mb-7">
         {topics.map((topic) => (
@@ -63,7 +63,7 @@ export function SuccessStep({ email, topics }: SuccessStepProps) {
           </svg>
         </div>
         <div>
-          <p className="text-sm font-medium text-[#374151] mb-0.5">
+          <p className="text-sm font-medium text-[#374151] dark:text-[#d1d5db] mb-0.5">
             Próximo resumen
           </p>
           <p className="text-xs text-[#6b7280] leading-relaxed">
