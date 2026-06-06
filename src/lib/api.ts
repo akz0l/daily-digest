@@ -40,7 +40,7 @@ export async function generateOtp(
   topics: Topic[]
 ): Promise<OtpResponse> {
   return callApi<OtpResponse>(
-    "/generate",
+    "/otp/generate",
     { email, topics },
     "No se pudo enviar el código. Intenta de nuevo."
   );
@@ -52,7 +52,7 @@ export async function validateOtp(
   email: string
 ): Promise<OtpResponse> {
   return callApi<OtpResponse>(
-    "/validate",
+    "/otp/validate",
     { id, otp, email },
     "No se pudo verificar el código. Intenta de nuevo."
   );

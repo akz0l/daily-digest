@@ -29,10 +29,21 @@ function topicsMatch(a, b) {
   return left !== null && left === right;
 }
 
+function getSiteBaseUrl() {
+  return process.env.UNSUBSCRIBE_BASE_URL?.trim() ?? "http://localhost:3000";
+}
+
 function buildUnsubscribeUrl(id, email) {
-  const baseUrl = process.env.UNSUBSCRIBE_BASE_URL?.trim() ?? "http://localhost:3000";
   const params = new URLSearchParams({ id, email });
-  return `${baseUrl}/unsubscribe?${params.toString()}`;
+  return `${getSiteBaseUrl()}/unsubscribe?${params.toString()}`;
+}
+
+function buildTermsUrl() {
+  return `${getSiteBaseUrl()}/terminos-de-uso`;
+}
+
+function buildPrivacyUrl() {
+  return `${getSiteBaseUrl()}/politica-de-privacidad`;
 }
 
 const dynamo = DynamoDBDocumentClient.from(new DynamoDBClient({}));
@@ -162,6 +173,8 @@ async function getActiveSubscribers() {
 
 function buildPlainText(digest, topics, subscriber) {
   const unsubscribeUrl = buildUnsubscribeUrl(subscriber.id, subscriber.email);
+  const termsUrl = buildTermsUrl();
+  const privacyUrl = buildPrivacyUrl();
   const lines = [`Digest Tech News — ${digest.date}`, "=".repeat(40), ""];
   for (const t of topics) {
     lines.push(`## ${t.name}`);
@@ -175,6 +188,8 @@ function buildPlainText(digest, topics, subscriber) {
     lines.push("");
   }
   lines.push("—");
+  lines.push(`Términos de uso: ${termsUrl}`);
+  lines.push(`Política de privacidad: ${privacyUrl}`);
   lines.push(`Para darte de baja, visita: ${unsubscribeUrl}`);
   return lines.join("\n");
 }
@@ -195,6 +210,8 @@ function buildEmailHtml(digest, topics, subscriber) {
   const topicBlocks = topics.map((t) => buildTopicBlock(t)).join("");
   const previewText = topics[0]?.editorial?.slice(0, 100) ?? "Tu resumen tech de hoy";
   const unsubscribeUrl = buildUnsubscribeUrl(subscriber.id, subscriber.email);
+  const termsUrl = buildTermsUrl();
+  const privacyUrl = buildPrivacyUrl();
 
   return `<!DOCTYPE html>
 <html lang="es">
@@ -273,8 +290,8 @@ function buildEmailHtml(digest, topics, subscriber) {
           <!-- #7a7a9a sobre #0a0a0f → 4.6:1 ✅ (solo 11px monospace, usado como meta) -->
           <p style="font-family:'DM Mono',monospace;font-size:11px;color:#7a7a9a;line-height:1.8;">
             © 2026 Digest Tech News &nbsp;·&nbsp;
-            <a href="#" style="color:#ff9900;text-decoration:none;">Terms</a> &nbsp;·&nbsp;
-            <a href="#" style="color:#ff9900;text-decoration:none;">Privacy</a> &nbsp;·&nbsp;
+            <a href="${termsUrl}" style="color:#ff9900;text-decoration:none;">Términos de uso</a> &nbsp;·&nbsp;
+            <a href="${privacyUrl}" style="color:#ff9900;text-decoration:none;">Política de privacidad</a> &nbsp;·&nbsp;
             <a href="${unsubscribeUrl}" style="color:#9090b0;text-decoration:underline;">Unsubscribe</a>
           </p>
         </td>
