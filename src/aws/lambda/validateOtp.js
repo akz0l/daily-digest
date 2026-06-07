@@ -5,6 +5,7 @@ import { randomUUID } from "crypto";
 const dynamo = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 const OTP_TABLE = "Otp-daily-digest";
 const SUBSCRIBERS_TABLE = "subscribers";
+const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN?.trim() ?? "http://localhost:3000";
 
 const ALLOWED_TOPICS = ["Cloud", "IA", "Ciberseguridad", "Development"];
 const TOPIC_ALIASES = {
@@ -244,7 +245,7 @@ async function expireRecord(id, reason) {
 function response(statusCode, body) {
   return {
     statusCode,
-    headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+    headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": ALLOWED_ORIGIN },
     body: JSON.stringify(body),
   };
 }

@@ -3,6 +3,7 @@ import { DynamoDBDocumentClient, ScanCommand } from "@aws-sdk/lib-dynamodb";
 
 const dynamo = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 const SUBSCRIBERS_TABLE = "subscribers";
+const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN?.trim() ?? "http://localhost:3000";
 
 export const handler = async (event) => {
   try {
@@ -60,7 +61,7 @@ async function isActiveSubscriber(email) {
 function response(statusCode, body) {
   return {
     statusCode,
-    headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+    headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": ALLOWED_ORIGIN },
     body: JSON.stringify(body),
   };
 }

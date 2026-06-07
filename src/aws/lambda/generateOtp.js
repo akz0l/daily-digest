@@ -39,9 +39,22 @@ const ses = new SESClient({});
 
 const TABLE_NAME = "Otp-daily-digest";
 const SES_SENDER = process.env.SES_SENDER?.trim();
+const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN?.trim() ?? "http://localhost:3000";
 const OTP_TTL_MINUTES = 10;
 const MAX_RETRIES = 3;
 const MAX_TOPICS = 10;
+
+function getSiteBaseUrl() {
+  return process.env.UNSUBSCRIBE_BASE_URL?.trim() ?? "http://localhost:3000";
+}
+
+function buildTermsUrl() {
+  return `${getSiteBaseUrl()}/terminos-de-uso`;
+}
+
+function buildPrivacyUrl() {
+  return `${getSiteBaseUrl()}/politica-de-privacidad`;
+}
 
 function generateOtp(length = 6) {
   return Array.from({ length }, () => Math.floor(Math.random() * 10)).join("");
@@ -128,12 +141,14 @@ export const handler = async (event) => {
 function response(statusCode, body) {
   return {
     statusCode,
-    headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+    headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": ALLOWED_ORIGIN },
     body: JSON.stringify(body),
   };
 }
 
 function buildEmailHtml(otp, ttlMinutes, topics) {
+  const termsUrl = buildTermsUrl();
+  const privacyUrl = buildPrivacyUrl();
   const topicPills = topics
     .map((t) => `<span style="display:inline-block;background:#fff8ec;border:1px solid #FF9900;color:#b36b00;font-size:12px;font-weight:500;padding:3px 10px;border-radius:20px;margin:3px 3px 0 0;">${t}</span>`)
     .join("");
@@ -162,7 +177,7 @@ function buildEmailHtml(otp, ttlMinutes, topics) {
           <p style="margin:0;font-size:13px;color:#9ca3af;">Si no solicitaste este código, puedes ignorar este mensaje. Nunca compartas este código con nadie.</p>
         </td></tr>
         <tr><td style="padding:20px 32px;border-top:1px solid #f3f4f6;text-align:center;">
-          <p style="margin:0;font-size:12px;color:#9ca3af;">© 2026 Cloud Tech News, Inc. · <a href="#" style="color:#FF9900;text-decoration:none;">Terms of Use</a> · <a href="#" style="color:#FF9900;text-decoration:none;">Privacy Policy</a></p>
+          <p style="margin:0;font-size:12px;color:#9ca3af;">© 2026 Daily Tech News · <a href="${termsUrl}" style="color:#FF9900;text-decoration:none;">Términos de uso</a> · <a href="${privacyUrl}" style="color:#FF9900;text-decoration:none;">Política de privacidad</a></p>
         </td></tr>
       </table>
     </td></tr>
