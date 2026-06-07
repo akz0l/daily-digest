@@ -11,42 +11,10 @@ El backend corre en AWS (Lambdas, API Gateway, DynamoDB, SES, EventBridge). Este
 3. Verifica el código y confirma la suscripción
 4. Cada día a las 9:00 AM (hora de Panamá) el backend genera y envía el digest por correo
 
-## Stack
 
-- **Next.js 16** (App Router)
-- **React 19**
-- **TypeScript**
-- **Tailwind CSS 4**
+## Diagrama
+<img width="1887" height="1288" alt="image" src="https://github.com/user-attachments/assets/48447b1f-79b0-4ed1-ac8f-5a4a1c3685c7" />
 
-## Empezar en local
-
-Requisitos: Node.js 20+ y [pnpm](https://pnpm.io).
-
-```bash
-pnpm install
-pnpm dev
-```
-
-Antes de arrancar, crea un `.env` en la raíz (ver abajo).
-
-Abre [http://localhost:3000](http://localhost:3000).
-
-### Variables de entorno
-
-**Local y Vercel (servidor — no expuestas al navegador):**
-
-```env
-OTP_API_ENDPOINT=https://tu-api-gateway.amazonaws.com
-OTP_API_KEY=tu-api-key-de-api-gateway
-```
-
-El frontend llama a `/api/*` en el mismo dominio; Next.js reenvía esas peticiones a API Gateway con el header `x-api-key`. La clave nunca llega al navegador.
-
-| Ruta | Método | Body |
-|------|--------|------|
-| `/generate` | POST | `{ "email": "...", "topics": ["Cloud", "IA"] }` |
-| `/validate` | POST | `{ "id": "...", "otp": "...", "email": "..." }` |
-| `/unsubscribe` | POST | `{ "id": "...", "email": "..." }` |
 
 ## Estructura del proyecto
 
@@ -67,15 +35,6 @@ docs/
 └── architecture/
     ├── diagrams/                   # Diagramas del flujo AWS
     └── decisions/                  # ADRs
-```
-
-## Scripts
-
-```bash
-pnpm dev      # servidor de desarrollo
-pnpm build    # build de producción
-pnpm start    # servir build
-pnpm lint     # eslint
 ```
 
 ## Arquitectura
