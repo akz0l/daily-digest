@@ -1,11 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const ALLOWED_PATHS = new Set([
-  "otp/generate",
-  "otp/validate",
-  "unsubscribe",
-  "subscriber",
-]);
+/** Rutas del front (/api/…) → rutas reales en API Gateway */
+const UPSTREAM_PATHS: Record<string, string> = {
+  "otp/generate": "generate",
+  "otp/validate": "validate",
+  unsubscribe: "unsubscribe",
+  subscriber: "subscriber",
+};
+
+function normalizeUpstreamResponse(text: string, httpStatus: number) {
+  try {
+    const json = JSON.parse(text) as { statusCode?: number; body?: unknown };
+    if (typeof json.statusCode === "number" && "body" in json) {
+      const body =
+        typeof json.body === "string"
+          ? json.body
+          : JSON.stringify(json.body ?? {});
+      return { status: json.statusCode, body };
+    }
+  } catch {
+    // Respuesta no JSON o ya viene desempaquetada
+  }
+  return { status: httpStatus, body: text };
+}
 
 export async function POST(
   request: NextRequest,
@@ -13,8 +30,9 @@ export async function POST(
 ) {
   const { path } = await params;
   const normalizedPath = path.join("/");
+  const upstreamPath = UPSTREAM_PATHS[normalizedPath];
 
-  if (!ALLOWED_PATHS.has(normalizedPath)) {
+  if (!upstreamPath) {
     return NextResponse.json({ message: "Ruta no encontrada." }, { status: 404 });
   }
 
@@ -30,17 +48,31 @@ export async function POST(
 
   const body = await request.text();
 
-  const upstream = await fetch(`${endpoint}/${normalizedPath}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": apiKey,
-    },
-    body,
-  });
+  let upstream: Response;
+  try {
+    upstream = await fetch(`${endpoint}/${upstreamPath}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+      },
+      body,
+    });
+  } catch {
+    return NextResponse.json(
+      { message: "No se pudo contactar el servicio." },
+      { status: 502 }
+    );
+  }
 
-  return new NextResponse(await upstream.text(), {
-    status: upstream.status,
+  const raw = await upstream.text();
+  const { status, body: responseBody } = normalizeUpstreamResponse(
+    raw,
+    upstream.status
+  );
+
+  return new NextResponse(responseBody, {
+    status,
     headers: { "Content-Type": "application/json" },
   });
 }
