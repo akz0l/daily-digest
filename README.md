@@ -33,11 +33,14 @@ Abre [http://localhost:3000](http://localhost:3000).
 
 ### Variables de entorno
 
+**Local y Vercel (servidor — no expuestas al navegador):**
+
 ```env
-NEXT_PUBLIC_OTP_ENDPOINT=https://tu-api-gateway.amazonaws.com
+OTP_API_ENDPOINT=https://tu-api-gateway.amazonaws.com
+OTP_API_KEY=tu-api-key-de-api-gateway
 ```
 
-La app llama a dos rutas de ese endpoint:
+El frontend llama a `/api/*` en el mismo dominio; Next.js reenvía esas peticiones a API Gateway con el header `x-api-key`. La clave nunca llega al navegador.
 
 | Ruta | Método | Body |
 |------|--------|------|

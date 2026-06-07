@@ -1,6 +1,6 @@
 import type { Topic } from "@/lib/topics";
 
-const API_ENDPOINT = process.env.NEXT_PUBLIC_OTP_ENDPOINT ?? "";
+const API_BASE = "/api";
 
 interface ApiBody {
   id?: string;
@@ -18,7 +18,7 @@ export async function callApi<T extends ApiBody>(
   body: Record<string, unknown>,
   fallbackMessage = "Ocurrió un error. Intenta de nuevo."
 ): Promise<T> {
-  const res = await fetch(API_ENDPOINT + path, {
+  const res = await fetch(`${API_BASE}${path}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
