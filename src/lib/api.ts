@@ -6,6 +6,7 @@ interface ApiBody {
   id?: string;
   message?: string;
   active?: boolean;
+  code?: string;
 }
 
 export interface OtpResponse {
@@ -24,11 +25,14 @@ export async function callApi<T extends ApiBody>(
     body: JSON.stringify(body),
   });
 
-  const outer = await res.json();
-  const parsed: T =
-    typeof outer.body === "string" ? JSON.parse(outer.body) : outer.body;
+  let parsed: T;
+  try {
+    parsed = await res.json();
+  } catch {
+    throw new Error(fallbackMessage);
+  }
 
-  if (outer.statusCode !== 200) {
+  if (!res.ok) {
     throw new Error(parsed.message ?? fallbackMessage);
   }
 

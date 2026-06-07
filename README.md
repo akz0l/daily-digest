@@ -110,21 +110,21 @@ Convertir la infra en IaC para que sea portable y replicable. Vamos por pedazos:
 
 Revisar la app de punta a punta:
 
-- [ ] Rate limits (OTP, endpoints públicos)
-- [ ] Inyecciones y validación de inputs (aunque no haya SQL, revisar DynamoDB, API Gateway, etc.)
-- [ ] Otras vulnerabilidades comunes (CORS mal configurado, headers, exposición de datos, abuso del flujo de suscripción)
+- [x] Rate limits (OTP, endpoints públicos)
+- [x] Inyecciones y validación de inputs (aunque no haya SQL, revisar DynamoDB, API Gateway, etc.)
+- [x] Otras vulnerabilidades comunes (CORS mal configurado, headers, exposición de datos, abuso del flujo de suscripción)
 
 ### Front y deploy
 
-- [ ] Afinar el frontend (UX, edge cases, responsive)
-- [ ] Desplegar front y backend
-- [ ] CORS bien configurado entre front y API
-- [ ] Enlace de unsubscribe en el correo del digest
-- [ ] Enlaces a términos y política de privacidad en el correo
+- [x] Afinar el frontend (UX, edge cases, responsive)
+- [x] Desplegar front y backend
+- [x] CORS bien configurado entre front y API
+- [x] Enlace de unsubscribe en el correo del digest
+- [x] Enlaces a términos y política de privacidad en el correo
 
 ### Documentación
 
-- [ ] Completar docs de arquitectura (diagramas, ADRs faltantes, runbooks)
+- [x] Completar docs de arquitectura (diagramas, ADRs faltantes, runbooks)
 - [ ] README del backend / IaC cuando exista
 - [ ] Guía de deploy
 
