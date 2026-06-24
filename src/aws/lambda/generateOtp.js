@@ -1,7 +1,7 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
-import { randomUUID } from "crypto";
+import { randomUUID, randomInt } from "crypto";
 
 const ALLOWED_TOPICS = ["Cloud", "IA", "Ciberseguridad", "Development"];
 const TOPIC_ALIASES = {
@@ -57,7 +57,7 @@ function buildPrivacyUrl() {
 }
 
 function generateOtp(length = 6) {
-  return Array.from({ length }, () => Math.floor(Math.random() * 10)).join("");
+  return Array.from({ length }, () => randomInt(0, 10)).join("");
 }
 
 export const handler = async (event) => {

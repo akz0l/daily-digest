@@ -1,0 +1,20 @@
+# Copy this file to terraform.tfvars and fill in your values.
+# terraform.tfvars is gitignored — never commit real values.
+
+aws_region   = "us-east-1"
+project_name = "daily-digest"
+environment  = "prod"
+
+# Email address verified in Amazon SES
+ses_sender_email = "noreply@yourdomain.com"
+
+# Frontend URL (used in CORS headers and email links)
+allowed_origin       = "https://your-frontend-domain.com"
+unsubscribe_base_url = "https://your-frontend-domain.com"
+
+# Anthropic API key for Claude (used by generateDigest Lambda)
+anthropic_api_key = "sk-ant-..."
+
+# DynamoDB table names — must match the hardcoded values in the Lambda source
+otp_table_name         = "Otp-daily-digest"
+subscribers_table_name = "subscribers"
